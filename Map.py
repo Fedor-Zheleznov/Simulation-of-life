@@ -1,5 +1,5 @@
 import random
-import Bot
+
 
 class Cell:
     def __init__(self, type, id):
@@ -35,14 +35,13 @@ class Map:
 
 
     def set_new_bot(self, id):
-        for y in range(self.y):
-            for x in range(self.x):
-                if self.cells[y][x].get("type") == "free":
-                    self.cells[y][x] = Cell("bot", id)
-                    return (x, y)
+        y = random.randint(0, self.y)
+        x = random.randint(0, self.x)
+        self.cells[y][x] = Cell("bot", id)
+        return (x, y)
 
     def set_bot(self, id, x, y):
-        if 0 <= x <= self.x-1 and 0 <= y <= self.y-1:
+        if 0 <= x <= self.x - 1 and 0 <= y <= self.y - 1:
             if self.cells[y][x].get("type") == "free":
                 last_bot_coord = self.bot_coord(id)
                 self.cells[y][x] = Cell("bot", id)
@@ -61,13 +60,13 @@ class Map:
         self.cells[self.bot_coord(id)[1]][self.bot_coord(id)[0]] = Cell("bot", id)
 
     def bot_up(self, id):
-        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1]-1)
+        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] - 1)
 
     def bot_down(self, id):
-        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1]+1)
+        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] + 1)
 
     def bot_right(self, id):
-        self.set_bot(id, self.bot_coord(id)[0]+1, self.bot_coord(id)[1])
+        self.set_bot(id, self.bot_coord(id)[0] + 1, self.bot_coord(id)[1])
 
     def bot_left(self, id):
         self.set_bot(id, self.bot_coord(id)[0]-1, self.bot_coord(id)[1])
@@ -80,7 +79,7 @@ class Map:
                 return 1
 
     def chek_and_acquire_under_the_bot(self, id):
-        if self.bot_coord(id)[1] != self.y-1:
+        if self.bot_coord(id)[1] != self.y - 1:
             if self.cells[self.bot_coord(id)[1] + 1][self.bot_coord(id)[0]].get("type") == "resource":
                 self.cells[self.bot_coord(id)[1] + 1][self.bot_coord(id)[0]] = Cell("free", 0)
                 self.count_of_resources -= 1
@@ -94,7 +93,7 @@ class Map:
                 return 1
 
     def chek_and_acquire_the_right_of_the_bot(self, id):
-        if self.bot_coord(id)[0] != self.x-1:
+        if self.bot_coord(id)[0] != self.x - 1:
             if self.cells[self.bot_coord(id)[1]][self.bot_coord(id)[0] + 1].get("type") == "resource":
                 self.cells[self.bot_coord(id)[1]][self.bot_coord(id)[0] + 1] = Cell("free", 0)
                 self.count_of_resources = self.count_of_resources - 1
@@ -113,17 +112,17 @@ class Map:
 
 
     def create_resource(self, how_much):
-        #self.resources_drawn = False
+        # self.resources_drawn = False
         for i in range(how_much):
             if self.count_of_resources < how_much:
-                self.resx = random.randint(0, self.x-1)
-                self.resy = random.randint(0, self.y-1)
+                self.resx = random.randint(0, self.x - 1)
+                self.resy = random.randint(0, self.y - 1)
                 if self.cells[self.resy][self.resx].get("type") == "free":
                     self.resid += 1
                     self.cells[self.resy][self.resx] = Cell("resource", self.resid)
                     self.resources.append(self.cells[self.resy][self.resx])
                     self.count_of_resources += 1
-            #elif self.resources_drawn is False:
+            # elif self.resources_drawn is False:
             #    self.count_of_resources = 0
             #    for y in range(self.y):
             #        for x in range(self.x):

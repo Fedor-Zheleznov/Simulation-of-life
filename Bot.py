@@ -6,7 +6,13 @@ class Bot:
         self.eaten = 0
         self.id = id
         self.map = map
-        self.moves = [map.bot_down, map.bot_right, map.bot_up, map.bot_left, map.stay_bot]
+        self.moves = {1: map.bot_down,
+                      2: map.bot_right,
+                      3: map.bot_up,
+                      4: map.bot_left,
+                      5: map.stay_bot}
+        self.UTK = [random.randint(1, 10) for z in range(64)]
+        self.UTK_index = 0
         map.set_new_bot(self.id)
 
     def my_coord(self):
@@ -20,6 +26,11 @@ class Bot:
             self.eaten += 1
 
     def step(self):
+        print(self.UTK_index & 63)
+        print(self.UTK)
         self.what_is_here()
-        self.moves[random.randint(0, 4)](self.id)
-
+        if self.UTK[self.UTK_index & 63] in self.moves:
+            self.moves[self.UTK[self.UTK_index & 63]](self.id)
+            self.UTK_index = self.UTK_index + self.UTK[self.UTK_index & 63]
+        else:
+            self.UTK_index += 1
