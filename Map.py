@@ -23,6 +23,7 @@ class Map:
     def __init__(self, engine):
         self.resources = []
         self.count_of_resources = 0
+        self.bots = 0
         self.resid = 199
         self.engine = engine
 
@@ -33,21 +34,34 @@ class Map:
         cell = Cell("free", 0)
         self.cells = [[cell for self.i in range(self.x)] for self.z in range(self.y)]
 
+    def set_new_wild_bot(self, id):
+        self.bots = 0
+        while self.bots != 1:
+            y = random.randint(0, self.y - 1)
+            x = random.randint(0, self.x - 1)
+            if self.cells[y][x].get("type") == "free":
+                self.cells[y][x] = Cell("wild_bot", id)
+                self.bots += 1
+                break
 
-    def set_new_bot(self, id):
-        y = random.randint(0, self.y)
-        x = random.randint(0, self.x)
-        self.cells[y][x] = Cell("bot", id)
-        return (x, y)
+    def set_new_herbivorous_bot(self, id):
+        self.bots = 0
+        while self.bots != 1:
+            y = random.randint(0, self.y - 1)
+            x = random.randint(0, self.x - 1)
+            if self.cells[y][x].get("type") == "free":
+                self.cells[y][x] = Cell("herbivorous_bot", id)
+                self.bots += 1
+                break
 
-    def set_bot(self, id, x, y):
+    def set_bot(self, id, x, y, type):
         if 0 <= x <= self.x - 1 and 0 <= y <= self.y - 1:
             if self.cells[y][x].get("type") == "free":
                 last_bot_coord = self.bot_coord(id)
-                self.cells[y][x] = Cell("bot", id)
+                self.cells[y][x] = Cell("type", id)
                 self.cells[last_bot_coord[1]][last_bot_coord[0]] = Cell("free", 0)
         else:
-            self.stay_bot(id)
+            self.stay_bot(id, type)
 
     def bot_coord(self, id):
         for y in range(self.y):
@@ -56,20 +70,20 @@ class Map:
                     coord = (int(x), int(y))
                     return coord
 
-    def stay_bot(self, id):
-        self.cells[self.bot_coord(id)[1]][self.bot_coord(id)[0]] = Cell("bot", id)
+    def stay_bot(self, id, type):
+        self.cells[self.bot_coord(id)[1]][self.bot_coord(id)[0]] = Cell(type, id)
 
-    def bot_up(self, id):
-        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] - 1)
+    def bot_up(self, id, type):
+        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] - 1, type)
 
-    def bot_down(self, id):
-        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] + 1)
+    def bot_down(self, id, type):
+        self.set_bot(id, self.bot_coord(id)[0], self.bot_coord(id)[1] + 1, type)
 
-    def bot_right(self, id):
-        self.set_bot(id, self.bot_coord(id)[0] + 1, self.bot_coord(id)[1])
+    def bot_right(self, id, type):
+        self.set_bot(id, self.bot_coord(id)[0] + 1, self.bot_coord(id)[1], type)
 
-    def bot_left(self, id):
-        self.set_bot(id, self.bot_coord(id)[0]-1, self.bot_coord(id)[1])
+    def bot_left(self, id, type):
+        self.set_bot(id, self.bot_coord(id)[0] - 1, self.bot_coord(id)[1], type)
 
     def chek_and_acquire_above_the_bot(self, id):
         if self.bot_coord(id)[1] != 0:
@@ -109,7 +123,15 @@ class Map:
         if self.chek_and_acquire_the_left_of_the_bot(id) == 1:
             return 1
 
-
+    def chek_and_acquire_the_collision(self, id):
+        if self.bot_coord(id)[1] == 0:
+            self.set_bot(id, self.bot_coord(id)[0], self.y - 2)
+        if self.bot_coord(id)[1] == self.y - 1:
+            self.set_bot(id, self.bot_coord(id)[0], 2)
+        if self.bot_coord(id)[0] == 0:
+            self.set_bot(id, self.x - 2, self.bot_coord(id)[1])
+        if self.bot_coord(id)[0] == self.x - 1:
+            self.set_bot(id, 2, self.bot_coord(id)[1])
 
     def create_resource(self, how_much):
         # self.resources_drawn = False

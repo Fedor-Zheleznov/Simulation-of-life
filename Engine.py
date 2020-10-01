@@ -10,8 +10,6 @@ class engine():
         self.w = w
         self.screen = pygame.display.set_mode((x * w, y * w))
         self.screen.fill((255, 255, 255))
-        #clock = pygame.time.Clock()
-        #clock.tick(0.5)
 
     def clear(self):
         self.screen.fill((255, 255, 255))
@@ -25,9 +23,12 @@ class engine():
     def update(self, map):
         for y in range(self.y):
             for x in range(self.x):
-                if map.cells[y][x].get("type") == "bot":
+                if map.cells[y][x].get("type") == "herbivorous_bot":
                     width = self.w
-                    pygame.draw.rect(self.screen, (0, 0, 255), (x * width + 1, y * width + 1, width - 1, width - 1))
+                    pygame.draw.rect(self.screen, (20,255,155), (x * width + 1, y * width + 1, width - 1, width - 1))
+                if map.cells[y][x].get("type") == "wild_bot":
+                    width = self.w
+                    pygame.draw.rect(self.screen, (255,150,20), (x * width + 1, y * width + 1, width - 1, width - 1))
                 if map.cells[y][x].get("type") == "resource":
                     width = self.w
                     pygame.draw.rect(self.screen, (255, 0, 0), (x * width + 1, y * width + 1, width - 1, width - 1))
